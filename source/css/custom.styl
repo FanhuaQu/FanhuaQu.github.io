@@ -1,0 +1,218 @@
+// ==================== 自定义样式 ====================
+// 此文件安装在 hexo 项目的 source/css/ 目录下
+// 编译后生成 /css/custom.css，需在 _config.yml 中引入
+
+// 1. 去掉侧边栏底部渐变遮罩，让边界从头到尾清晰
+.l_left .leftbar-container
+  >.widgets
+    mask: none !important
+    -webkit-mask: none !important
+  &:before
+    mask: none !important
+    -webkit-mask: none !important
+
+// 2. 侧边栏背景图：降低饱和度 + 铺满不留边距 + 不超出边界
+.l_left
+  overflow: hidden         // 裁剪 blur 滤镜溢出，使背景图不超出侧边栏
+.l_left .sidebg
+  /* display: none */
+  --saturate: 100%         // 默认 400%，改为 100% 即原图色彩
+  --inset: 0px !important    // 默认有 blur-px 时会有 32px 内边距
+
+// 3. 布局尺寸调整（取消注释即可生效）
+:root
+  --width-main: 780px            // 正文宽度，默认 720px
+  --side-content-width: 224px    // 侧边栏宽度，默认 224px
+  --gap-margin: 16px             // 卡片到屏幕边缘间距，默认 16px
+  --gap-padding: 16px            // 文字到卡片边缘间距，默认 16px
+  --gap-p: calc(body + 4px)      // 段落间距，默认 calc(body + 4px)
+
+// 4. 侧边栏与正文间距 + 侧边栏底部距离
+.l_body
+  // 三栏（侧边栏-正文-侧边栏）之间的间距，默认 desktop: gap-margin*4
+  grid-gap: 16px
+  /* desktop: gap-margin */
+.l_left
+  // 侧边栏底部到页面底部的距离（改 max-height 中的 24px 即可）
+  // 公式：100vh - 顶部边距 - 底部留白
+  max-height: calc(100vh - 36px - 4px) !important
+.l_left .leftbar-container
+  height: calc(100vh - 36px - 24px) !important
+
+// 4. 侧边栏组件字体微调（如需要可取消注释）
+.l_left .widget-body
+  font-size: 1rem // 0.9375rem
+
+// 5. 文章内页：侧边栏自动缩窄 + 正文加宽
+// 只在文章内页增大正文宽度，不影响主页
+.l_body[layout="post"]
+  --width-main: 860px   // 主页 760px，文章页利用缩窄侧边栏后的空间
+
+.l_body[layout="post"] .l_left
+  // 隐藏 logo、搜索、widgets、背景图层及光晕
+  .logo-wrap, .widgets, .sidebg
+    display: none !important
+  .leftbar-container:before
+    display: none
+  // 导航图标竖向排列（覆盖 grid 为 flex 列）
+  .nav-area .menu
+    display: flex
+    flex-direction: column
+    gap: 8px
+  // 只显示图标，隐藏文字
+  .nav-area .nav-item span
+    display: none
+  // 隐藏"关于"导航项（只保留博客、分类 + 底部主题切换）
+  .nav-area .nav-item:last-child
+    display: none
+  // 菜单项去掉背景，圆形 hover，尺寸对齐底部图标
+  .nav-area .nav-item
+    background: transparent
+    min-height: unset
+    border-radius: 50%
+    width: 32px
+    height: 32px
+    padding: 6px
+    img,svg
+      height: 20px
+  // 缩窄整体宽度，贴到最左边
+  width: 64px !important
+  min-width: 64px
+  justify-self: start !important  // Chrome 兼容：强制覆盖默认的 right 对齐
+  margin-left: 16px !important        // 确保无左边距
+  margin-right: 4px
+  // 容器居中
+  .leftbar-container
+    padding: 12px 4px
+    align-items: center
+    justify-content: flex-end
+    text-align: center
+  // 底部社交图标竖向排列
+  footer.footer
+    margin: 0.5rem 4px 1rem
+    .social-wrap
+      display: flex
+      flex-direction: column
+      align-items: center
+      gap: 4px
+
+// 6. 文章内页排版微调
+.md-text.content
+  // 代码块上下间距增大
+  .highlight
+    margin: 28px 0
+  // 图片上下间距增大
+  .tag-plugin.image
+    margin-top: 24px
+    margin-bottom: 24px
+  // 段落内嵌的图片（![]() 语法）
+  p:has(> img)
+    margin-top: 24px
+    margin-bottom: 24px
+
+
+// ==================== 7. 正文排版优化 ====================
+
+// 7.1 段落间距：增大段落间距，让它明显大于行间距
+.md-text.content
+  // 行高提升（中文需要更大的行高）
+  line-height: 1.8
+
+  // 段落间距改为 1.5 倍行距的视觉间距
+  p, ul, ol
+    margin-top: 'calc(%s * 1.2)' % var(--fsp)   // ≈20.4px (原来 17px)
+    margin-bottom: 'calc(%s * 1.2)' % var(--fsp)
+
+// 7.2 修复标题层级：确保 h1 > h2 > h3 递减
+.md-text.content
+  h1
+    font-size: 'calc(%s + 12px)' % var(--fsp)  // 29px（原来被 h2 反超）
+  h2
+    font-size: 'calc(%s + 8px)' % var(--fsp)   // 25px
+  h3
+    font-size: 'calc(%s + 4px)' % var(--fsp)   // 21px
+  h4
+    font-size: 'calc(%s + 1px)' % var(--fsp)   // 18px
+
+// 7.3 标题间距：统一设定上下间距
+.md-text.content
+  h1
+    margin-top: 2em
+    margin-bottom: 0.8em
+  h2
+    margin-top: 1.8em
+    margin-bottom: 0.7em
+  h3
+    margin-top: 1.5em
+    margin-bottom: 0.6em
+  h4
+    margin-top: 1.3em
+    margin-bottom: 0.5em
+  h5, h6
+    margin-top: 1em
+    margin-bottom: 0.4em
+
+// 7.4 列表优化：增大列表项间距，增强层级感
+.md-text.content
+  li + li
+    margin-top: 0.3em   // 列表项之间有点间隔
+  ul, ol
+    padding-left: 'calc(%s * 1.5)' % var(--fsp)  // 增大缩进
+  // 嵌套列表缩进更深
+  ul ul, ol ol, ul ol, ol ul
+    padding-left: 'calc(%s * 1.2)' % var(--fsp)
+
+// 7.5 引用块增强
+.md-text.content blockquote
+  margin-top: 'calc(%s * 1.2)' % var(--fsp)
+  margin-bottom: 'calc(%s * 1.2)' % var(--fsp)
+  padding: 'calc(%s * 0.5)' % var(--fsp) var(--fsp)  // 上下也加内边距
+  border-radius: 0 8px 8px 0  // 右侧微圆角
+
+// 7.6 表格间距
+.md-text.content table:not([class])
+  margin: 'calc(%s * 1.5)' % var(--fsp) 0
+
+// 7.7 标题前缀字号微调（让 # = 等符号更协调）
+.l_body[type='tech'] article.content
+  h2 > a:first-child:before
+    font-size: 0.8em  // # 符号稍大一些
+  h3 > a:first-child:before
+    font-size: 0.7em
+
+// 8. 分类索引组件样式 — 与标签索引统一暗色背景
+.widget-wrapper.categories
+  .widget-body
+    border-radius: 6px // $border-card-s
+    padding: 12px 16px
+    background: var(--bg-a50)
+    .item
+      display: flex
+      align-items: center
+      justify-content: space-between
+      padding: 6px 8px
+      border-radius: 6px
+      color: var(--text-p2)
+      transition: background 0.2s, color 0.2s
+      &:hover
+        background: var(--bg-a20)
+        color: var(--accent)
+      .icon
+        flex-shrink: 0
+        width: 18px
+        height: 18px
+        margin-right: 8px
+        svg
+          width: 100%
+          height: 100%
+          fill: currentColor
+      .name
+        flex: 1
+        overflow: hidden
+        text-overflow: ellipsis
+        white-space: nowrap
+      .count
+        flex-shrink: 0
+        margin-left: 8px
+        font-size: 0.85em
+        color: var(--text-p4)
