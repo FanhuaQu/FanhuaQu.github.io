@@ -1,0 +1,151 @@
+######## Stellar 主题配置 ########
+# 你可以在这里覆盖主题 _config.yml 中的任何配置项
+# 完整配置参考: https://xaoxuu.com/wiki/stellar/
+
+  # article:
+  #   type: tech # tech/story
+
+
+  # 左上角 logo 区域
+  logo:
+    avatar: '[/assets/avatar.jpg](/about/)'
+    title: '[{config.title}](/)'
+    subtitle: '{config.subtitle}'
+
+
+  # 侧边栏主导航菜单
+  menubar:
+    columns: 3
+    items:
+      - id: post
+        # theme: '#1BCDFC'
+        icon: '<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24"><path fill="currentColor" d="M23.121,9.069,15.536,1.483a5.008,5.008,0,0,0-7.072,0L.879,9.069A2.978,2.978,0,0,0,0,11.19v9.817a3,3,0,0,0,3,3H21a3,3,0,0,0,3-3V11.19A2.978,2.978,0,0,0,23.121,9.069ZM15,22.007H9V18.073a3,3,0,0,1,6,0Zm7-1a1,1,0,0,1-1,1H17V18.073a5,5,0,0,0-10,0v3.934H3a1,1,0,0,1-1-1V11.19a1.008,1.008,0,0,1,.293-.707L9.878,2.9a3.008,3.008,0,0,1,4.244,0l7.585,7.586A1.008,1.008,0,0,1,22,11.19Z"/></svg>'
+        title: 博客
+        url: /
+      - id: categories
+        # theme: '#3DC550'
+        icon: '<svg xmlns="http://www.w3.org/2000/svg"  id="Outline" width="20" height="20" viewBox="0 0 24 24"><path fill="currentColor" d="M7,0H4A4,4,0,0,0,0,4V7a4,4,0,0,0,4,4H7a4,4,0,0,0,4-4V4A4,4,0,0,0,7,0ZM9,7A2,2,0,0,1,7,9H4A2,2,0,0,1,2,7V4A2,2,0,0,1,4,2H7A2,2,0,0,1,9,4Z"/><path   fill="currentColor" d="M20,0H17a4,4,0,0,0-4,4V7a4,4,0,0,0,4,4h3a4,4,0,0,0,4-4V4A4,4,0,0,0,20,0Zm2,7a2,2,0,0,1-2,2H17a2,2,0,0,1-2-2V4a2,2,0,0,1,2-2h3a2,2,0,0,1,2,2Z"/><path  fill="currentColor" d="M7,13H4a4,4,0,0,0-4,4v3a4,4,0,0,0,4,4H7a4,4,0,0,0,4-4V17A4,4,0,0,0,7,13Zm2,7a2,2,0,0,1-2,2H4a2,2,0,0,1-2-2V17a2,2,0,0,1,2-2H7a2,2,0,0,1,2,2Z"/><path  fill="currentColor" d="M20,13H17a4,4,0,0,0-4,4v3a4,4,0,0,0,4,4h3a4,4,0,0,0,4-4V17A4,4,0,0,0,20,13Zm2,7a2,2,0,0,1-2,2H17a2,2,0,0,1-2-2V17a2,2,0,0,1,2-2h3a2,2,0,0,1,2,2Z"/></svg>'
+        title: 分类
+        url: /categories/
+      # - id: tags
+      #   theme: '#FA6400'
+      #   icon: solar:hashtag-square-bold
+      #   title: 标签
+      #   url: /tags/
+      - id: about
+        # theme: '#F44336'
+        icon: '<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24"><path fill="currentColor" d="M12,12A6,6,0,1,0,6,6,6.006,6.006,0,0,0,12,12ZM12,2A4,4,0,1,1,8,6,4,4,0,0,1,12,2Z"/><path fill="currentColor" d="M12,14a9.01,9.01,0,0,0-9,9,1,1,0,0,0,2,0,7,7,0,0,1,14,0,1,1,0,0,0,2,0A9.01,9.01,0,0,0,12,14Z"/></svg>'
+        title: 关于
+        url: /about/
+
+  # 站点结构树 - 定义每种页面的布局
+  site_tree:
+    # 主页
+    home:
+      leftbar: nav_links, recent
+      rightbar: categories, tagcloud
+    # 博客列表页（包含分类/标签/归档页）
+    index_blog:
+      base_dir: blog
+      menu_id: post  # 默认高亮"博客"，分类/标签/归档页自动改为对应 menu_id
+      leftbar: nav_links, recent
+      rightbar:
+      nav_tabs:
+    # 文档列表页
+    index_wiki:
+      base_dir: wiki
+      menu_id: wiki
+      leftbar: nav_links, related, recent
+      rightbar:
+      nav_tabs:
+    # 文章内页
+    post:
+      menu_id: post
+      leftbar: nav_links, related, recent
+      rightbar: toc
+    # Wiki 内页
+    wiki:
+      menu_id: wiki
+      leftbar: nav_links, tree, related, recent
+      rightbar: toc
+    # 自定义页面
+    page:
+      leftbar: nav_links, recent
+      rightbar: toc
+
+  # 文章配置
+  article:
+    type: tech  # tech / story
+    auto_excerpt: 200
+    license: '本文采用 [署名-非商业性使用-相同方式共享 4.0 国际](https://creativecommons.org/licenses/by-nc-sa/4.0/) 许可协议，转载请注明出处。'
+    share:
+
+  # 搜索
+  search:
+    service: local_search
+    local_search:
+      field: all
+      path: /search.json
+      content: true
+
+  # 评论 (以 Giscus 为例，可替换)
+  comments:
+    service:  # beaudar, utterances, giscus, twikoo, waline, artalk
+    comment_title: 快来参与讨论吧~
+
+
+  # 样式
+  style:
+    prefers_theme: auto  # auto / light / dark
+    font-family:
+      # 思源宋体（更正式）+ 思源黑体
+      body: '"LXGW WenKai", "Noto Sans SC", "Noto Serif SC",  "PingFang SC", "Microsoft YaHei", system-ui, -apple-system, sans-serif'
+      code: '"JetBrains Mono", "Fira Code", Menlo, Monaco, "Courier New", monospace'
+      codeblock: '"JetBrains Mono", "Fira Code", Menlo, Monaco, "Courier New", monospace'
+    font-size:
+      root: 16px
+      body: 17px
+    color:
+      theme: '#1BCDFC'
+    # 侧边栏样式
+    leftbar:
+      blur-px: 100px            # 模糊强度（0px = 关闭模糊/光晕，必须带 px 单位！）
+      # blur-bg: var(--bg-a60) # 模糊颜色
+      # background-image: ""
+      # background-opacity: 0.6
+      background-color-light: rgba(255,255,255,0.6)  # 亮色模式侧边栏背景
+      background-color-dark: rgba(30,30,30,0.7)       # 暗色模式侧边栏背景
+    border-radius:
+      card-l: 16px    # 侧边栏、文章横幅
+      card: 8px      # 文章内大部分卡片
+      card-s: 8px    # 小型卡片
+      bar: 8px        # 横条类元素
+      image-l: 24px   # 非技术类文章插图
+      image: 16px     # 技术类文章插图
+      image-s: 8px    # 评论区图片
+
+    # 主内容区
+    site:
+      blur-px: 100px       # 主内容区毛玻璃模糊强度
+      blur-sat: 100%     # 模糊饱和度
+
+  # 侧边栏底部社交链接
+  footer:
+    social:
+      github:
+        icon: '<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24"><path fill="currentColor" d="M12 2A10 10 0 0 0 2 12c0 4.42 2.87 8.17 6.84 9.5c.5.08.66-.23.66-.5v-1.69c-2.77.6-3.36-1.34-3.36-1.34c-.46-1.16-1.11-1.47-1.11-1.47c-.91-.62.07-.6.07-.6c1 .07 1.53 1.03 1.53 1.03c.87 1.52 2.34 1.07 2.91.83c.09-.65.35-1.09.63-1.34c-2.22-.25-4.55-1.11-4.55-4.92c0-1.11.38-2 1.03-2.71c-.1-.25-.45-1.29.1-2.64c0 0 .84-.27 2.75 1.02c.79-.22 1.65-.33 2.5-.33c.85 0 1.71.11 2.5.33c1.91-1.29 2.75-1.02 2.75-1.02c.55 1.35.2 2.39.1 2.64c.65.71 1.03 1.6 1.03 2.71c0 3.82-2.34 4.66-4.57 4.91c.36.31.69.92.69 1.85V21c0 .27.16.59.67.5C19.14 20.16 22 16.42 22 12A10 10 0 0 0 12 2"/></svg>'
+        url: https://github.com/FanhuaQu
+        title: GitHub
+      # rss:
+      #   icon: '<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24"><path fill="currentColor" d="M5 21q-.825 0-1.412-.587T3 19q0-.825.588-1.412T5 17q.825 0 1.413.588T7 19q0 .825-.587 1.413T5 21m13.5 0q-.65 0-1.088-.475T16.9 19.4q-.275-2.425-1.312-4.537T12.9 11.1q-1.65-1.65-3.762-2.687T4.6 7.1q-.65-.075-1.125-.512T3 5.5q0-.65.45-1.062t1.075-.363q3.075.275 5.763 1.563t4.737 3.337q2.05 2.05 3.338 4.738t1.562 5.762q.05 .625-.363 1.075T18.5 21m-6 0q-.625 0-1.075-.437T10.85 19.5q-.225-1.225-.787-2.262T8.65 15.35q-.85-.85-1.888-1.412T4.5 13.15q-.625-.125-1.062-.575T3 11.5q0-.65.45-1.075t1.075-.325q1.825.25 3.413 1.063t2.837 2.062q1.25 1.25 2.063 2.838t1.062 3.412q.1 .625-.325 1.075T12.5 21"/></svg>'
+      #   url: /atom.xml
+      #   title: RSS
+      theme:
+        icon: '<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24"><path fill="currentColor" d="M12 18a6 6 0 1 1 0-12a6 6 0 0 1 0 12M11 1h2v3h-2zm0 19h2v3h-2zM3.515 4.929l1.414-1.414L7.05 5.636L5.636 7.05zM16.95 18.364l1.414-1.414l2.121 2.121l-1.414 1.414zm2.121-14.85l1.414 1.415l-2.121 2.121l-1.414-1.414zM5.636 16.95l1.414 1.414l-2.121 2.121l-1.414-1.414zM23 11v2h-3v-2zM4 11v2H1v-2z"/></svg>'
+        onclick: 'switchTheme()'
+        title: 切换主题
+
+
+  plugins:
+    mathjax:
+      enable: true
