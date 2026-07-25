@@ -1,3 +1,11 @@
+---
+title: ldmatrix 指令
+date: 2026-07-25 18:00:00
+tags: [CUDA, PTX, ldmatrix]
+categories: [PTX 学习笔记]
+description: 文章介绍了 PTX 中的 ldmatrix 指令和 stmatrix 指令。
+---
+
 # ldmatrix
 ## 指令介绍
 ldmatrix作用是把数据从共享内存加载到寄存器，主要配合mma指令使用
