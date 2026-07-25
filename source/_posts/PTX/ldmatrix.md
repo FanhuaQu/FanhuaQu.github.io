@@ -9,7 +9,7 @@ description: 文章介绍了 PTX 中的 ldmatrix 指令和 stmatrix 指令。
 # ldmatrix
 ## 指令介绍
 ldmatrix作用是把数据从共享内存加载到寄存器，主要配合mma指令使用
-是一个warp级别的指令，一个warp中的32个线程合作搬运数据
+这是一个warp级别的指令，一个warp中的32个线程合作搬运数据
 ```c++
 ldmatrix.sync.aligned.shape.num{.trans}{.ss}.type r, [p];
 
