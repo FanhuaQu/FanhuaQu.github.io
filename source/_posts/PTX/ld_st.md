@@ -65,7 +65,7 @@ ld.mmio.sem.sys{.global}.type  d, [a];
   * .global: 全局显存
   * .local: 局部显存
   * .param：参数内存（::entry 对应 Kernel 入口参数，::func 对应函数参数）
-  * .shared: 共享内存(::cta, ::cluster)
+  * .shared: 共享内存(::cta, ::cluster)，默认是cta
   * 假如不写.ss，默认是通用地址，硬件在运行时动态判定(开销？)
 * .cop (Cache Operation，缓存操作策略)
   * .ca: 是默认策略，L1、L2都缓存
@@ -93,4 +93,102 @@ ld.mmio.sem.sys{.global}.type  d, [a];
 * .type(数据类型)  
 
 
-  
+上面跟我已知的不一样的是，有这样的描述：
+> The .v8 (.vec) qualifier is supported if: .type is .b32 or .s32 or .u32 or .f32
+这样的话一条PTX指令支持load总共256bit的数据，有如下限定：
+> Support for .level2::eviction_priority qualifier and .v8.b32/.v4.b64 require sm_100 or higher.
+很好奇SASS层面，是LDG.256还是两条LDG.128呢？回头测试一下。
+```c++
+ld.global.L2::evict_last.v8.f32 { %reg0, _, %reg2, %reg3, %reg4, %reg5, %reg6, %reg7}, [addr];
+ld.global.L2::evict_last.L1::evict_last.v4.u64 { %reg0, %reg1, %reg2, %reg3}, [addr];
+```
+
+
+## `ld.relaxed`和`ld.acquire`
+先来看一下，典型的producer-comsumer模型
+```bash
+Thread A                  Thread B
+
+store data=123
+
+store flag=1  -------->   load flag
+
+                          load data
+```
+GPU编译器可能会重排，比如线程A执行顺序可能是
+```c++
+flag = 1;
+data = 123;
+```
+这样线程B读到的data可能就是旧值。
+所以需要memory ordering
+PTX提供了下面指令：
+```c++
+ld.relaxed
+ld.acquire
+
+st.relaxed
+st.release
+
+atom.relaxed
+atom.acquire
+atom.release
+atom.acq_rel
+```
+
+* relaxed 语义是
+> 允许最大程度重排，只保证这个load/store操作是原子的
+比如`ld.relaxed.gpu.u32 %r1,[addr];`, 意思是：读取 addr 的值，但是不要因为这个load阻止前后的memory操作重排
+原子意思是，这条指令是一次完成的，中间不会被其他指令插入
+* acquire 语义是
+> 当前线程执行 acquire load 后，后面的 memory operation 不能被移动到 acquire load 前面
+比如先后执行 `ld.acquire(flag)`和`load data`，一定能保证顺序  
+上面的producer-comsumer：
+```bash
+# thread A
+data = 123;
+st.release(flag,1);
+
+# thread B
+while(ld.acquire(flag)==0);
+print(data);
+```
+
+# ld.global.nc 指令
+使用非一致性缓存加载
+前面知道，L1 cache是不保证一致性的，当使用ld.global.nc的时候，就是在向GPU硬件声明：
+“保证kernel运行期间，没有任何线程会去写这个地址的数据”
+硬件接到这个保证之后，就会：
+1. 走只读缓存通道，绕过普通的L1 cache
+2. 极高的命中率和极低的读延迟，因为放弃了一致性维护，不需要处理复杂的 Write-back / Invalidation 逻辑，因而能提供极高的读取吞吐量和更低的访问延迟
+3. 减少了普通L1/L2的缓存污染，把只读的常量/权重数据路由到只读缓存中，能够为需要频繁读写的变量腾出普通 L1/L2 缓存的空间
+
+简单理解就是跟L1同级别的，有一块只读缓存，所以下面指令可以支持绕过只读缓存
+```
+ld.global{.cop}.nc{.level::cache_hint}{.level::prefetch_size}.type                 d, [a]{, cache_policy};
+ld.global{.cop}.nc{.level::cache_hint}{.level::prefetch_size}.vec.type             d, [a]{, cache_policy};
+
+ld.global.nc{.level1::eviction_priority}{.level2::eviction_priority}{.level::cache_hint}{.level::prefetch_size}.type      d, [a]{, cache_policy};
+ld.global.nc{.level1::eviction_priority}{.level2::eviction_priority}{.level::cache_hint}{.level::prefetch_size}.vec.type  d, [a]{, cache_policy};
+
+.cop  =                     { .ca, .cg, .cs };     // cache operation
+.level1::eviction_priority = { .L1::evict_normal, .L1::evict_unchanged,
+                               .L1::evict_first, .L1::evict_last, .L1::no_allocate};
+.level2::eviction_priority = {.L2::evict_normal, .L2::evict_first, .L2::evict_last};
+.level::cache_hint =        { .L2::cache_hint };
+.level::prefetch_size =     { .L2::64B, .L2::128B, .L2::256B }
+.vec  =                     { .v2, .v4, .v8 };
+.type =                     { .b8, .b16, .b32, .b64, .b128,
+                              .u8, .u16, .u32, .u64,
+                              .s8, .s16, .s32, .s64,
+                              .f32, .f64 };
+```
+
+具体怎么使用呢？
+```c++
+val = __ldg(ptr);   // 强制走 Read-Only Cache 加载
+
+void kernel(const float* __restrict__ A)    // 编译器自动分析出指针只读且无别名，自动优化为 .nc 加载
+```
+
+上面也是我们经常用到的优化手段。
