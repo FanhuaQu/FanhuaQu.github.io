@@ -58,9 +58,14 @@ layout_B = complement(alyout_A, 8)，8是目标内存总大小
 可以将Layout_A和Layout_B组合起来
 layout_C = make_layout(layout_A, layout_B) = (4, 2) : (2, 1), 这就是后面要讲的divide的操作
 
+计算一个layout的补集包含下面两步：填充和复制
+1. 填充，如果 layout A 的 stride 不是 1 的话，就表明 layout A 的 codomain 空间中有些元素没有覆盖到，需要先经过填充，处理后，layout A 能覆盖的所有元素为 cosize(layout A)
+2. 复制，将上面的处理过后的layout进行平移复制，直到复制之后的layout能够完全覆盖M的大小
 
-
-
+举个例子：
+M = 24， layout_A = 4 : 2
+complement(4:2, 24)的结果如下：
+![alt text](../../assets/Layout_Algebra/image-6.png)
 
 # logic_divide(Tiling)
 逻辑除法，本质上就是**自动构造Tile块和Tile的补集，然后将它们嵌套在一起**
@@ -147,3 +152,5 @@ tiled_divide(Layout<LShape,LStride> const& layout,
 
 这个设计用于将把你的一维线程 ID，正确地映射成列优先或行优先的二维坐标，再算出最终的内存地址。
 
+**总结**
+> 这一节主要整理了layout的代数运算，个人认为不要陷入到了繁琐的公式中去，重点在于理解。下一节会从具体的copy例子中体会
