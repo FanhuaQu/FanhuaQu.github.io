@@ -22,13 +22,13 @@ Cute 对 Copy的抽象采用了五层金字塔结构，自底向上依次为
 * ThrCopy: 某个线程的视角，partition_S/D, retile_S/D
 源文件分布如下:  
 -------------------------------
-|      层级      |              源文件               |            职责             |
-| :------------: | :-------------------------------: | :-------------------------: |
-| Copy Operation |    include/cute/arch/copy*.hpp    |       封装PTX内联汇编       |
-|  Copy_Traits   | include/cute/atom/copy_traits.hpp |     描述T-V到bit的映射      |
-|   Copy_Atom    |  include/cute/atom/copy_atom.hpp  | 提供调用接口和ValType参数化 |
-|   TiledCopy    |  include/cute/atom/copy_atom.hpp  |     将Atom在MN方向平铺      |
-|    ThrCopy     |  include/cute/atom/copy_atom.hpp  |   单线程的分区与执行视角    |
+|层级|源文件|职责|
+| :---: | :---: | :---: |
+|Copy Operation|include/cute/arch/copy*.hpp|封装PTX内联汇编|
+|Copy_Traits | include/cute/atom/copy_traits.hpp | 描述T-V到bit的映射|
+|Copy_Atom | include/cute/atom/copy_atom.hpp | 提供调用接口和ValType参数化|
+|TiledCopy | include/cute/atom/copy_atom.hpp | 将Atom在MN方向平铺 |
+|ThrCopy | include/cute/atom/copy_atom.hpp | 单线程的分区与执行视角 |
 ---------------------------------------
 
 下面挨个看
